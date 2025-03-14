@@ -18,7 +18,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Add Todo")),
+      appBar: AppBar(title: Text("Add Todo"), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: ListView(
@@ -39,6 +39,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
             ElevatedButton(
               onPressed: () {
                 summitdata();
+                if (titlecontroller.text.isEmpty ||
+                    descriptioncontroller.text.isEmpty) {
+                  ShowerrorBanner('PLESE FILL THE REQUIRED FIELDS');
+                  
+                }
               },
               child: Text("Add To Todo"),
             ),
