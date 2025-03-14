@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:todo_app/pages/add_todo_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +13,7 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
+  bool isloading = true;
   List items = [];
   //*init state to automatically load data
   @override
@@ -24,16 +26,19 @@ class _TodoListPageState extends State<TodoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Todo"), centerTitle: true, elevation: 2),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index] as Map;
-          return ListTile(
-            leading: CircleAvatar(child: Text('${index + 1}')),
-            title: Text(item['title']),
-            subtitle: Text(item['description']),
-          );
-        },
+      body: LiquidPullToRefresh(
+        onRefresh: fetchTodo,
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index] as Map;
+            return ListTile(
+              leading: CircleAvatar(child: Text('${index + 1}')),
+              title: Text(item['title']),
+              subtitle: Text(item['description']),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -48,6 +53,9 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   Future<void> fetchTodo() async {
+    setState(() {
+      isloading = false;
+    });
     final url = "https://api.nstack.in/v1/todos?page=1&limit=10";
     final uri = Uri.parse(url);
     final response = await http.get(uri);
@@ -57,7 +65,9 @@ class _TodoListPageState extends State<TodoListPage> {
       setState(() {
         items = result;
       });
-    } else
-      print("error");
+    }
+    setState(() {
+      isloading = false;
+    });
   }
 }

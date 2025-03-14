@@ -42,7 +42,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 if (titlecontroller.text.isEmpty ||
                     descriptioncontroller.text.isEmpty) {
                   ShowerrorBanner('PLESE FILL THE REQUIRED FIELDS');
-                  
                 }
               },
               child: Text("Add To Todo"),
@@ -76,13 +75,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
     //show sucess and fail message on basis of status
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 ) {
       ShowSucessBanner("Sucessfully added");
-      titlecontroller.text = ' ';
-      descriptioncontroller.text = ' ';
     } else
-      print('failed');
-    ShowerrorBanner("Failed plese try again later");
+      ShowerrorBanner("Failed plese try again later");
   }
 
   void ShowSucessBanner(String message) {
