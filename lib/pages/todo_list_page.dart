@@ -41,6 +41,7 @@ class _TodoListPageState extends State<TodoListPage> {
               trailing: PopupMenuButton(
                 onSelected: (value) {
                   if (value == 'edit') {
+                    navigatetoeditpage(item);
                     //open edit page
                   } else if (value == 'delete') {
                     deletebyid(id);
@@ -58,11 +59,16 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
+            //async and await for data taking some time
             context,
             MaterialPageRoute(builder: (context) => AddTodoPage()),
           );
+          setState(() {
+            isloading = true; //set state for reload
+          });
+          fetchTodo(); //to complete reload
         },
         label: Text("Add ToDo"),
       ),
@@ -93,10 +99,29 @@ class _TodoListPageState extends State<TodoListPage> {
     final uri = Uri.parse(url);
     final respnse = await http.delete(uri);
     if (respnse.statusCode == 200) {
-      final filtered = items.where((element) => element['_id'] != id).toList();
+      final filtered =
+          items
+              .where((element) => element['_id'] != id)
+              .toList(); //for without loading delete
       setState(() {
         items = filtered;
       });
     }
+  }
+
+  //? making custom button
+  void navigatetoeditpage(Map item) async {
+    //It takes a Map item as an argument, which represents the todo item.
+    final Route = MaterialPageRoute(
+      builder:
+          (context) => AddTodoPage(
+            todo: item,
+          ), //*The todo: item part passes the selected todo item to the AddTodoPage, allowing the user to edit it.
+    );
+    await Navigator.push(context, Route);
+    setState(() {
+      isloading = true;
+    });
+    fetchTodo();
   }
 }
